@@ -150,36 +150,80 @@ async def searchlazada(linkproduct: str = Form()):
                 data_dict_list.append(data_dict)
     
     elif len(framoption)==1:
+        print('1choice')
         headers1=framoption[0].find_element_by_class_name('section-title').text
         header_dict_list={"headerchoie1":headers1,"headerchoie2":None}
         try:
             btnzone1=framoption[0].find_element_by_class_name('sku-prop-content')
-            btn1nameselected=btnzone1.find_element_by_class_name('sku-variable-size-selected')
-            btn1nameselected.click()
-            btn1name=btnzone1.find_elements_by_class_name('sku-variable-size')
-        
+            print(btnzone1.text)
         except:
-            btnzone1=framoption[0].find_element_by_class_name('sku-prop-content')
+            print('erorr')
+
+
+        
+        
+        try:
+            try:
+                btn1nameselected=btnzone1.find_element_by_class_name('sku-variable-size-selected')
+            except:
+                btn1nameselected=btnzone1.find_element_by_class_name('sku-variable-name-selected')
+                print(btn1nameselected.text)
+        except:
             btn1nameselected=btnzone1.find_element_by_class_name('sku-variable-img-wrap-selected')
-            btn1nameselected.click()
-            btn1name=btnzone1.find_elements_by_class_name('sku-variable-img-wrap')
+            
+        btn1nameselected.click()
+
+
+
+        # framoption=driver.find_elements_by_class_name("pdp-mod-product-info-section.sku-prop-selection")
+        # btnzone1=framoption[0].find_element_by_class_name('sku-prop-content')
         
         
+        try:
+            print('that work btn1')
+            btn1name = btnzone1.find_elements_by_class_name('sku-variable-name')
+            if len(btn1name) < 1:
+                raise Exception("Error: No elements found.")
+            print(framoption[0].text)
+        except Exception as e:
+            print(str(e))
+            btn1name = btnzone1.find_elements_by_class_name('sku-variable-img-wrap')
+            print('that work btn2')
+            if len(btn1name) < 1:
+                raise Exception("Error: No elements found.")
+        else:
+            btn1name = btnzone1.find_elements_by_class_name('sku-variable-size')
+            print('that work btn3')
+            if len(btn1name) < 1:
+                raise Exception("Error: No elements found.")
+
+        
+                
+           
+       
+                
+         
+            
+        
+
 
         btn1list=[]
   
-        for btn1 in btn1name:
-            btn1.click()
-            time.sleep(0.2)
-            btnname1text=framoption[0].find_element_by_class_name('sku-name').text
-            btn1list.append(btnname1text)
+        # for btn1 in btn1name:
+        #     print('clickwork')
+        #     btn1.click()
+        #     time.sleep(0.2)
+        #     btnname1text=framoption[0].find_element_by_class_name('sku-name').text
+        #     btn1list.append(btnname1text)
 
 
         for btn1 in btn1name:
+       
             data_dict = dict()
             btn1.click()
             btnname1text=framoption[0].find_element_by_class_name('sku-name').text
             time.sleep(0.2)
+            btn1list.append(btnname1text)
             btn1class = btn1.get_attribute("class")
             if "disabled" in btn1class:
                 framamoute = 0

@@ -231,28 +231,96 @@ async def login(linkproduct: str = Form()):
     return alllist
 
 
+# @shopee.post("/shopee/search/") #วางลิ้ง
+# async def login(linkproduct: str = Form()):
+
+@shopee.post("/shopee/flashsale")
+def get_flashsale():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    driver = webdriver.Chrome(executable_path=r'chromedriver.exe')
+    # driver = webdriver.Chrome(executable_path=r'chromedriver.exe', options=chrome_options)
+        # driver.get('https://www.shopee.co.th')
+    
+    driver.get('https://shopee.co.th/')
+    thai_lang = driver.find_element_by_class_name('shopee-button-outline.shopee-button-outline--primary-reverse')
+    thai_lang.click()
+    close_popup = driver.execute_script("return document.querySelector('shopee-banner-popup-stateful').shadowRoot.querySelector('div.shopee-popup__close-btn')")
+    close_popup.click()
+    # driver.execute_script("document.body.style.zoom='10%'")
+
+    flashsalebox=driver.find_element_by_class_name('PF1fuW')
+    time.sleep(2)
+    nextbtn=flashsalebox.find_element_by_class_name('carousel-arrow.carousel-arrow--next.carousel-arrow--hint')
+    svgicon=nextbtn.find_element_by_tag_name('svg')
+    # svgicon.click()
+    # time.sleep(1)
+    # svgicon.click()
+    time.sleep(2)
+
+    data_dict_list=[]
+    col=flashsalebox.find_elements_by_class_name('image-carousel__item')
+    for product in col:
+        time.sleep(1)
+        data_dict = dict()
+        price = product.find_element_by_class_name('hSM8kk').text
+        price=price.replace('฿\n',"")
+        sold=product.find_element_by_class_name('eNmE7o.RJ6Vpu').text
+        try:
+            image=product.find_element_by_class_name('wP9-V9.WPIj4t')
+        except:
+            svgicon.click()
+            time.sleep(2)
+            image=product.find_element_by_class_name('wP9-V9.WPIj4t')
+        
+        urlimage=image.get_attribute('style')
+        match = re.search(r'background-image:\s*url\((.*?)\)', urlimage)
+        if match:
+            background_image_url = match.group(1)
+            background_image_url=background_image_url[1:-1]
+            image = background_image_url
+
+        data_dict['price'] = price
+        data_dict['images'] = image
+        data_dict['sold'] = sold
+        data_dict_list.append(data_dict)
+    driver.quit()
+    return data_dict_list
 
 
-@shopee.get("/users")
-def get_users():
-    return {"item_id": "adas", "q": "dasda"}
+@shopee.post("/shopee/diary")
+def get_diary():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    driver = webdriver.Chrome(executable_path=r'chromedriver.exe')
+    
+    driver.get('https://shopee.co.th/')
+    thai_lang = driver.find_element_by_class_name('shopee-button-outline.shopee-button-outline--primary-reverse')
+    thai_lang.click()
+    close_popup = driver.execute_script("return document.querySelector('shopee-banner-popup-stateful').shadowRoot.querySelector('div.shopee-popup__close-btn')")
+    close_popup.click()
+    driver.execute_script("document.body.style.zoom='10%'")
+    time.sleep(2)
 
+    diarybox=driver.find_element_by_class_name('stardust-tabs-panels')
+    time.sleep(1.5)
+    data_dict_list=[]
+    col=diarybox.find_elements_by_class_name('nH7cMF')
+    for product in col:
+        time.sleep(0.5)
+        data_dict = dict()
+        price = product.find_element_by_class_name('_3KqMTq').text
+        title=product.find_element_by_class_name('sUq1Dr._1M8qaS')
+        title=remove_emoji(title.text)
+        sold=product.find_element_by_class_name('_6ykn6M.aO8bXP').text
+        image=product.find_element_by_tag_name('img')
+        image=image.get_attribute("src")
 
-# @shopee.post("/users")
-# def create_user(user: User):
-#     return 'asdada'
-
-
-@shopee.get("/users/{id}")
-def get_user(id: str):
-    return 
-
-
-@shopee.delete("/users/{id}")
-def delete_user(id: str):
-    return 
-
-
-# @shopee.put("/users/{id}")
-# def update_user(id: str, user: User):
-#     return "updated"
+        data_dict['price'] = price
+        data_dict['images'] = image
+        data_dict['sold'] = sold
+        data_dict['title'] = title
+        
+        data_dict_list.append(data_dict)
+    driver.quit()
+    return data_dict_list
