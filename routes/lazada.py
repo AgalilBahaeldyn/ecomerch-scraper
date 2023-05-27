@@ -148,7 +148,7 @@ async def searchlazada(linkproduct: str = Form()):
                 data_dict['price'] = price
                     
                 data_dict_list.append(data_dict)
-    
+
     elif len(framoption)==1:
         print('1choice')
         headers1=framoption[0].find_element_by_class_name('section-title').text
@@ -183,32 +183,38 @@ async def searchlazada(linkproduct: str = Form()):
             print('that work btn1')
             btn1name = btnzone1.find_elements_by_class_name('sku-variable-name')
             if len(btn1name) < 1:
-                raise Exception("Error: No elements found.")
+                raise Exception("Error: No elements found1.")
             print(framoption[0].text)
         except Exception as e:
             print(str(e))
-            btn1name = btnzone1.find_elements_by_class_name('sku-variable-img-wrap')
-            print('that work btn2')
-            if len(btn1name) < 1:
-                raise Exception("Error: No elements found.")
-        else:
-            btn1name = btnzone1.find_elements_by_class_name('sku-variable-size')
-            print('that work btn3')
-            if len(btn1name) < 1:
-                raise Exception("Error: No elements found.")
+            try:
+                btn1name = btnzone1.find_elements_by_class_name('sku-variable-img-wrap')
+                print('that work btn2')
+                if len(btn1name) < 1:
+                    raise Exception("Error: No elements found2.")
+            except Exception as e:
+                print(str(e))
+                try:
+                    btn1name = btnzone1.find_elements_by_class_name('sku-variable-size')
+                    print('that work btn3')
+                    if len(btn1name) < 1:
+                        raise Exception("Error: No elements found3.")
+                except Exception as e:
+                    print(str(e))
+
 
         
                 
-           
-       
+            
+        
                 
-         
+            
             
         
 
 
         btn1list=[]
-  
+
         # for btn1 in btn1name:
         #     print('clickwork')
         #     btn1.click()
@@ -218,10 +224,13 @@ async def searchlazada(linkproduct: str = Form()):
 
 
         for btn1 in btn1name:
-       
+        
             data_dict = dict()
             btn1.click()
-            btnname1text=framoption[0].find_element_by_class_name('sku-name').text
+            try:
+                btnname1text=framoption[0].find_element_by_class_name('sku-name').text
+            except:
+                btnname1text=btn1.text
             time.sleep(0.2)
             btn1list.append(btnname1text)
             btn1class = btn1.get_attribute("class")
@@ -288,5 +297,5 @@ async def searchlazada(linkproduct: str = Form()):
     else:
         alllist=[{"selectnumber":0},{"info":info_dict},{"images":img_list}]
     driver.quit()
-    return alllist
+    return alllist 
 
